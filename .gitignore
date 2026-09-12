@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Env / secrets
+.env
+.env.*
+*.key
+
+# Build output
+dist/
+build/
+
+# Editor/OS
+.DS_Store
+.vscode/
+.idea/
