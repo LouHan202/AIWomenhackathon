@@ -13,13 +13,24 @@ const STEPS: { screens: ScreenId[]; label: string; Icon: typeof FileText }[] = [
   { screens: ['commercial-summary'], label: 'Offer', Icon: HandCoins },
 ]
 
-export function ScentThreadRail({ current }: { current: ScreenId }) {
+export function ScentThreadRail({ current, compact = false }: { current: ScreenId; compact?: boolean }) {
   const { state, dispatch } = useApp()
   const currentIndex = STEPS.findIndex((s) => s.screens.includes(current))
 
   const navigateToStep = (screens: ScreenId[]) => {
     const target = state.role === 'expert' && screens.includes('expert-review') ? 'expert-review' : screens[0]
     dispatch({ type: 'NAVIGATE', screen: target })
+  }
+
+  if (compact) {
+    const step = STEPS[currentIndex]
+    if (!step) return null
+    return (
+      <nav aria-label="Journey progress" className="flex items-center gap-2 whitespace-nowrap text-xs">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-paper"><step.Icon size={14} aria-hidden="true" /></span>
+        <span aria-current="step"><span className="block font-medium">{step.label}</span><span className="text-ink-muted">{currentIndex + 1} of {STEPS.length}</span></span>
+      </nav>
+    )
   }
 
   return (

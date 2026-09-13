@@ -69,15 +69,15 @@ export function MachineRecommendationScreen() {
 
       <FixedFooter>
         <Button variant="secondary" onClick={() => dispatch({ type: 'NAVIGATE', screen: 'suggestion' })}>Back</Button>
-        <div className="ml-auto flex items-stretch gap-3">
-          <div className="flex items-center gap-3 rounded-lg border border-signal-green/30 bg-emerald-50 px-4">
+        <div className="cost-footer-actions ml-auto flex items-stretch gap-3">
+          <div className="cost-footer-badge flex items-center gap-3 rounded-lg border border-signal-green/30 bg-emerald-50 px-4">
             <Wallet size={22} className="shrink-0 text-signal-green" aria-hidden="true" />
             <div className="flex items-center gap-2">
-              <p className="text-xs text-ink-muted">Estimated cost</p>
+              <p className="text-xs text-ink-muted"><span className="sm:hidden">Est. cost</span><span className="hidden sm:inline">Estimated cost</span></p>
               <p className="tabular text-lg font-semibold">€{estimatedCost.toLocaleString()}</p>
             </div>
           </div>
-          <Button variant="primary" onClick={() => dispatch({ type: 'NAVIGATE', screen: 'commercial-summary' })}>Continue to offer summary</Button>
+          <Button variant="primary" onClick={() => dispatch({ type: 'NAVIGATE', screen: 'commercial-summary' })}><span className="sm:hidden">Continue</span><span className="hidden sm:inline">Continue to offer summary</span></Button>
         </div>
       </FixedFooter>
     </main>

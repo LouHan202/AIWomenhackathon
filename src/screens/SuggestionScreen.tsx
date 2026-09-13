@@ -229,11 +229,11 @@ export function SuggestionScreen() {
             >
               Back
             </Button>
-            <div className="ml-auto flex items-stretch gap-3">
-            <div className="flex items-center gap-3 rounded-lg border border-signal-green/30 bg-emerald-50 px-4">
+            <div className="cost-footer-actions ml-auto flex items-stretch gap-3">
+            <div className="cost-footer-badge flex items-center gap-3 rounded-lg border border-signal-green/30 bg-emerald-50 px-4">
               <Wallet size={22} className="shrink-0 text-signal-green" aria-hidden="true" />
               <div className="flex items-center gap-2">
-                <p className="text-xs text-ink-muted">Estimated cost</p>
+                <p className="text-xs text-ink-muted"><span className="sm:hidden">Est. cost</span><span className="hidden sm:inline">Estimated cost</span></p>
                 <p className="tabular text-lg font-semibold">€{oilCost.toLocaleString()}</p>
               </div>
             </div>
@@ -241,7 +241,7 @@ export function SuggestionScreen() {
               variant="primary"
               onClick={() => dispatch({ type: 'NAVIGATE', screen: 'machine' })}
             >
-              Continue to machine recommendation
+              <span className="sm:hidden">Continue</span><span className="hidden sm:inline">Continue to machine recommendation</span>
             </Button>
             </div>
       </FixedFooter>
