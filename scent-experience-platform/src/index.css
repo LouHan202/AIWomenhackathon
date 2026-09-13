@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — Osmo-derived contract (approved 2026-09-12).
+  Source of truth: docs/design-contract.md. One light theme throughout — no more
+  dark/light register split. Coral is reserved for the primary CTA only; every other
+  interactive or selected state uses ink (see contract "Amendment on approval").
+*/
+@theme {
+  --font-display: "Tenor Sans", "Noto Serif", serif;
+  --font-body: "DM Sans", "Noto Sans", sans-serif;
+
+  /* core surfaces */
+  --color-paper: #ffffff;
+  --color-surface-sunken: oklch(0.97 0.006 70); /* off-white fill for inputs/textareas */
+  --color-line: oklch(0.89 0.006 70); /* hairline borders */
+  --color-ink: #212121; /* the only text color — hierarchy comes from size/weight, not gray */
+  --color-ink-muted: oklch(0.55 0.006 70); /* labels, hints, secondary chrome only */
+
+  /* the one brand accent — CTA-only per approved amendment */
+  --color-coral: #ff8d5c;
+  --color-coral-soft: #ffa178; /* decorative hero blob only, never an interactive state */
+
+  /* status (functional, not brand identity — unrelated to the coral accent) */
+  --color-signal-amber: oklch(0.75 0.14 70);
+  --color-signal-green: oklch(0.62 0.11 152);
+  --color-signal-red: oklch(0.6 0.17 25);
+
+  --shadow-color: 55 10% 10%;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--color-coral-soft);
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* the signature motif: a soft, blurred coral glow behind hero headlines — decorative only */
+@keyframes blob-drift {
+  0%, 100% { transform: translate(-50%, 0) scale(1); }
+  50% { transform: translate(-50%, 12px) scale(1.03); }
+}
+
+@keyframes thread-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.05; transform: scale(1.6); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
