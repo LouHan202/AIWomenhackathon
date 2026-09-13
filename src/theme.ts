@@ -7,7 +7,7 @@ const colors = Object.fromEntries(
 )
 const focus = { outline: '2px solid', outlineColor: 'ink', outlineOffset: '2px' }
 const input = {
-  width: '100%', height: 'auto', minWidth: 0, border: '1px solid', borderColor: 'line', borderRadius: '0.5rem',
+  width: '100%', height: 'auto', minWidth: 0, border: '1px solid', borderColor: 'line', borderRadius: '4px',
   bg: 'paper', color: 'ink', px: '0.875rem', py: '0.75rem', fontSize: '0.95rem',
   _placeholder: { color: 'ink-muted', opacity: 0.85 }, _focusVisible: focus,
 }
@@ -38,7 +38,7 @@ export const system = createSystem(defaultConfig, defineConfig({
         },
       },
       input: { base: input, variants: { variant: { outline: input } } },
-      textarea: { base: { ...input, borderRadius: '0.75rem', py: '1rem', resize: 'none' }, variants: { variant: { outline: { border: '1px solid', borderColor: 'line', bg: 'paper' } } } },
+      textarea: { base: { ...input, py: '1rem', resize: 'none' }, variants: { variant: { outline: { border: '1px solid', borderColor: 'line', bg: 'paper' } } } },
     },
     slotRecipes: {
       nativeSelect: { slots: ['root', 'field', 'indicator'], base: { field: input, indicator: { color: 'ink-muted' } }, variants: { variant: { outline: { field: input } } } },

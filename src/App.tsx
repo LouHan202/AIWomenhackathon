@@ -3,6 +3,7 @@ import { TopNav } from './components/TopNav'
 import { BriefUpload } from './screens/BriefUpload'
 import { AiAnalysisResults } from './screens/AiAnalysisResults'
 import { SuggestionScreen } from './screens/SuggestionScreen'
+import { MachineRecommendationScreen } from './screens/MachineRecommendationScreen'
 import { ExpertReviewScreen } from './screens/ExpertReviewScreen'
 import { CommercialSummary } from './screens/CommercialSummary'
 import { ControlDashboard } from './screens/ControlDashboard'
@@ -17,6 +18,8 @@ function Screen() {
       return <AiAnalysisResults />
     case 'suggestion':
       return <SuggestionScreen />
+    case 'machine':
+      return <MachineRecommendationScreen />
     case 'expert-review':
       return <ExpertReviewScreen />
     case 'commercial-summary':

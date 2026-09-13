@@ -1,199 +1,113 @@
 import { FixedFooter } from '../components/ui/FixedFooter'
-import { useEffect } from 'react'
-import { Sparkle } from '@phosphor-icons/react'
+import { useLayoutEffect, useState } from 'react'
+import { Wind, ClipboardCheck, Users, Citrus, Leaf, Droplets, Flower2, Waves, Layers, Trees, Cloud, Sun, Wallet } from 'lucide-react'
+import neroliTerraceVisual from '../../img/neroli-terrace-visual.png'
 import { useApp } from '../lib/state'
-import { MACHINE_CATALOG } from '../lib/machines'
 import { estimateOilCostOverDuration } from '../lib/costs'
-import { buildVisualDirectionPrompt, generateVisualDirectionMedia } from '../lib/visual-direction'
 import { Button } from '../components/ui/Button'
-import { Card } from '../components/ui/Card'
-import { Tag } from '../components/ui/Tag'
 
 export function SuggestionScreen() {
   const { state, dispatch } = useApp()
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [])
   const project = state.project!
-  const machine = MACHINE_CATALOG.find((m) => m.id === project.selectedMachineId)!
   const zoneCount = project.brief.deploymentScope.value === 'Multi-site' ? 3 : project.brief.deploymentScope.value === 'Multi-room' ? 2 : 1
   const oilCost = estimateOilCostOverDuration(zoneCount, project.brief.durationDays)
 
   const isComplex = project.brief.classification === 'complex'
   const selected = project.directions.find((d) => d.id === project.selectedDirectionId)
-  const isConfirmed = selected?.status === 'confirmed'
-  const awaitingExpert = isComplex && !isConfirmed
-  const visual = project.visualDirectionMedia
-  const scentLabel = selected?.label ?? project.directions[0]?.label ?? 'Direction candidate'
+  const activeDirection = selected ?? project.directions[0]
+  const isConfirmed = activeDirection?.status === 'confirmed'
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const scentLabel = activeDirection?.label ?? 'Direction candidate'
   const scentDescription =
-    selected?.familyDescription ??
-    project.directions[0]?.familyDescription ??
+    activeDirection?.familyDescription ??
     'A directional scent concept will appear here after selecting a direction.'
   const scentMoments = [
     {
       phase: 'Top',
       time: '0-30 min',
       title: 'Arrival lift',
-      notes: ['Citrus peel', 'Airy green leaf', 'Watery brightness'],
+      notes: [{ label: 'Citrus peel', Icon: Citrus }, { label: 'Airy green leaf', Icon: Leaf }, { label: 'Watery brightness', Icon: Droplets }],
     },
     {
       phase: 'Heart',
       time: '30-90 min',
       title: 'Atmosphere build',
-      notes: ['Soft floral trace', 'Cool mineral air', 'Textural bridge'],
+      notes: [{ label: 'Soft floral trace', Icon: Flower2 }, { label: 'Cool mineral air', Icon: Waves }, { label: 'Textural bridge', Icon: Layers }],
     },
     {
       phase: 'Base',
       time: '90 min+',
       title: 'Lingering residence',
-      notes: ['Clean woods', 'Musk veil', 'Warm surface accord'],
+      notes: [{ label: 'Clean woods', Icon: Trees }, { label: 'Musk veil', Icon: Cloud }, { label: 'Warm surface accord', Icon: Sun }],
     },
   ]
 
-  useEffect(() => {
-    if (visual.status !== 'queued') return
-    const direction = selected ?? project.directions[0]
-    if (!direction) {
-      dispatch({ type: 'FAIL_VISUAL_DIRECTION_GENERATION', error: 'No direction selected for visual generation.' })
-      return
-    }
-
-    const prompt = buildVisualDirectionPrompt(project.brief, direction)
-    dispatch({ type: 'START_VISUAL_DIRECTION_GENERATION', prompt, kind: 'image' })
-
-    let cancelled = false
-    ;(async () => {
-      try {
-        const result = await generateVisualDirectionMedia(visual.provider, prompt, direction.label)
-        if (cancelled) return
-        dispatch({ type: 'SET_VISUAL_DIRECTION_JOB', jobId: result.jobId })
-        dispatch({ type: 'COMPLETE_VISUAL_DIRECTION_GENERATION', assetUrl: result.assetUrl, kind: result.kind })
-      } catch (error) {
-        if (cancelled) return
-        dispatch({
-          type: 'FAIL_VISUAL_DIRECTION_GENERATION',
-          error: error instanceof Error ? error.message : 'Generation failed',
-        })
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [dispatch, project, selected, visual.provider, visual.status])
-
   return (
-    <main className="mx-auto max-w-5xl px-6 pb-36 pt-12 sm:pt-16">
-      <p className="text-xs uppercase tracking-[0.14em] text-ink-muted">Step 3 of 5</p>
-      <h1 className="mt-3 text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Your recommended setup</h1>
-
-      {awaitingExpert && (
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-signal-amber/40 bg-signal-amber/10 px-5 py-4 text-sm text-signal-amber">
-          <Sparkle className="h-5 w-5 shrink-0" />
-          <span>
-            This brief needs a fragrance consultant and technical consultant to sign off before anything is
-            final. You'll see this update the moment they confirm.
-          </span>
-        </div>
-      )}
-      {!isComplex && state.customerRequestedExpertReview && !isConfirmed && (
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-signal-amber/40 bg-signal-amber/10 px-5 py-4 text-sm text-signal-amber">
-          <Sparkle className="h-5 w-5 shrink-0" />
-          <span>Expert review requested. A fragrance consultant will confirm this setup shortly.</span>
-        </div>
-      )}
+    <main className="mx-auto max-w-4xl px-5 pb-36 pt-10 sm:px-8">
+      <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Scent direction</h1>
 
       <section className="mt-10">
-        <h2 className="text-sm font-semibold tracking-normal text-ink-muted">Machine</h2>
-        <Card className="mt-3">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg">{machine.model}</h3>
-                <Tag kind="ai">Recommended</Tag>
+        <div className="overflow-hidden">
+          <div className="overflow-hidden rounded-2xl border border-line bg-paper p-5">
+            <aside className="pb-6">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Olfactive direction</p>
               </div>
-              <p className="mt-2 max-w-lg text-sm text-ink-muted">{machine.reasoning}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs uppercase tracking-[0.08em] text-ink-muted">{machine.priceTierLabel}</p>
-              <p className="tabular text-xl">€{machine.priceEur.toLocaleString()}</p>
-              <p className="text-xs text-ink-muted">or €{machine.rentalPerWeekEur}/week</p>
-            </div>
-          </div>
-        </Card>
-      </section>
 
-      <section className="mt-10">
-        <h2 className="text-sm font-semibold tracking-normal text-ink-muted">Fragrance direction: pick one to explore</h2>
-        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {project.directions.map((d) => {
-            const isSelected = d.id === project.selectedDirectionId
-            return (
-              <Card
-                key={d.id}
-                className={`flex flex-col justify-between transition-colors duration-150 ${isSelected ? 'border-ink' : ''}`}
-              >
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-base">{d.label}</h3>
-                    {d.isAiTopPick && <Tag kind="ai">AI top pick</Tag>}
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-muted">{d.familyDescription}</p>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <Tag kind={d.status === 'confirmed' ? 'green' : 'amber'}>
-                    {d.status === 'confirmed' ? 'Confirmed' : 'Draft, pending expert'}
-                  </Tag>
-                  <Button
-                    variant={isSelected ? 'secondary' : 'ghost'}
-                    className="px-3 py-1.5 text-xs"
-                    onClick={() => dispatch({ type: 'SELECT_DIRECTION', directionId: d.id })}
-                  >
-                    {isSelected ? 'Selected' : 'Approve'}
-                  </Button>
-                </div>
-              </Card>
-            )
-          })}
-        </div>
-        {!isComplex && !state.customerRequestedExpertReview && (
-          <button
-            className="mt-3 text-xs text-ink-muted underline decoration-line underline-offset-4 hover:text-ink"
-            onClick={() => dispatch({ type: 'REQUEST_EXPERT_REVIEW' })}
-          >
-            Request expert review anyway
-          </button>
-        )}
-      </section>
+              <div className="mt-4 grid gap-6 sm:grid-cols-[180px_minmax(0,1fr)]">
+              <div className="flex flex-wrap content-start gap-2 sm:flex-col">
+                {project.directions.map((d) => {
+                  const isSelected = d.id === activeDirection?.id
+                  return (
+                    <button
+                      key={d.id}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => dispatch({ type: 'SELECT_DIRECTION', directionId: d.id })}
+                      className={`min-w-[9.5rem] rounded-xl border px-3 py-2 text-left transition-colors duration-150 ${
+                        isSelected
+                          ? 'border-ink bg-paper shadow-sm'
+                          : 'border-line bg-transparent text-ink-muted hover:border-ink-muted hover:text-ink'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium">{d.label}</span>
+                        {d.status === 'confirmed' && <span className="h-2 w-2 rounded-full bg-signal-green" aria-hidden="true" />}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
 
-      <section className="mt-10">
-        <h2 className="text-sm font-semibold tracking-normal text-ink-muted">Scent direction</h2>
-        <Card className="mt-3 overflow-hidden">
-          <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            <aside className="rounded-2xl border border-line bg-surface-sunken p-5">
-              <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Olfactive direction</p>
-              <h3 className="mt-3 text-2xl">{scentLabel}</h3>
+              <div className="min-w-0">
+              <h3 className="text-2xl">{scentLabel}</h3>
               <p className="mt-4 text-sm leading-relaxed text-ink-muted">{scentDescription}</p>
-              <dl className="mt-6 grid gap-2 text-sm">
-                <div className="flex items-center justify-between border-t border-line pt-2">
-                  <dt className="text-ink-muted">Format</dt>
+              <dl className="mt-6 flex flex-wrap gap-x-5 gap-y-3 border-t border-line pt-3 text-sm">
+                <div className="flex min-w-0 items-center gap-2">
+                  <dt className="flex items-center gap-2 whitespace-nowrap text-ink-muted"><Wind size={16} aria-hidden="true" />Format</dt>
                   <dd>Spatial scent</dd>
                 </div>
-                <div className="flex items-center justify-between border-t border-line pt-2">
-                  <dt className="text-ink-muted">Status</dt>
+                <div className="flex min-w-0 items-center gap-2">
+                  <dt className="flex items-center gap-2 whitespace-nowrap text-ink-muted"><ClipboardCheck size={16} aria-hidden="true" />Status</dt>
                   <dd>{isConfirmed ? 'Confirmed' : 'Draft'}</dd>
                 </div>
-                <div className="flex items-center justify-between border-t border-line pt-2">
-                  <dt className="text-ink-muted">Owner</dt>
+                <div className="flex min-w-0 items-center gap-2">
+                  <dt className="flex items-center gap-2 whitespace-nowrap text-ink-muted"><Users size={16} aria-hidden="true" />Owner</dt>
                   <dd>{isComplex ? 'Expert review' : 'AI + expert'}</dd>
                 </div>
               </dl>
+              </div>
+              </div>
             </aside>
 
-            <div className="rounded-2xl border border-line bg-paper p-5">
+            <div className="border-t border-line pt-6">
               <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
                 <div>
                   <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Olfactory architecture</p>
-                  <h3 className="mt-2 text-2xl">{scentLabel}</h3>
                 </div>
-                <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Space trail 0-4 hours</p>
               </div>
 
               <div className="mt-4 rounded-xl border border-line bg-surface-sunken p-4">
@@ -261,8 +175,8 @@ export function SuggestionScreen() {
                     </p>
                     <h4 className="mt-2 text-lg">{moment.title}</h4>
                     <ul className="mt-2 space-y-1 text-sm text-ink-muted">
-                      {moment.notes.map((note) => (
-                        <li key={note}>{note}</li>
+                      {moment.notes.map(({ label, Icon }) => (
+                        <li key={label} className="flex items-start gap-2"><Icon size={16} className="mt-0.5 shrink-0" aria-hidden="true" /><span>{label}</span></li>
                       ))}
                     </ul>
                   </article>
@@ -274,72 +188,62 @@ export function SuggestionScreen() {
               </p>
             </div>
           </div>
-        </Card>
+        </div>
       </section>
 
       <section className="mt-10">
         <h2 className="text-sm font-semibold tracking-normal text-ink-muted">Image direction</h2>
-        <Card className="mt-3 overflow-hidden p-0">
-          {visual.status === 'generating' || visual.status === 'queued' ? (
-            <div className="flex min-h-[360px] flex-col items-center justify-center gap-3 bg-surface-sunken px-6 py-12 text-center">
-              <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Generating image direction</p>
-              <h3 className="text-3xl">Rendering {scentLabel}</h3>
-              <p className="max-w-md text-sm text-ink-muted">
-                Building the scene from your approved direction. Provider: {visual.provider === 'nano-banana' ? 'Nano Banana' : 'HeyGen'}.
-              </p>
-              <div className="mt-2 h-1.5 w-52 overflow-hidden rounded-full bg-line">
-                <span className="block h-full w-1/2 animate-pulse rounded-full bg-ink" />
+        <div className="mt-3 overflow-hidden rounded-xl">
+          <div className="relative min-h-[280px] bg-surface-sunken" aria-busy={!imageLoaded}>
+            {!imageLoaded && (
+              <div role="status" className="absolute inset-0 flex items-center justify-center gap-2 text-sm text-ink-muted">
+                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-signal-green motion-safe:animate-pulse" />
+                Preparing image direction…
               </div>
-            </div>
-          ) : visual.status === 'completed' && visual.assetUrl ? (
-            <div className="relative bg-paper p-4">
-              {visual.kind === 'video' ? (
-                <video src={visual.assetUrl} controls playsInline className="h-auto max-h-[560px] w-full rounded-xl border border-line object-cover" />
-              ) : (
-                <img src={visual.assetUrl} alt={`Generated visual direction for ${scentLabel}`} className="h-auto max-h-[560px] w-full rounded-xl border border-line object-cover" />
-              )}
-            </div>
-          ) : (
-            <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 bg-surface-sunken px-6 py-10 text-center">
-              <p className="text-sm text-signal-red">{visual.error || 'Generation failed.'}</p>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  dispatch({ type: 'QUEUE_VISUAL_DIRECTION_GENERATION' })
-                }}
-              >
-                Retry generation
-              </Button>
-            </div>
-          )}
-        </Card>
+            )}
+            <img
+              src={neroliTerraceVisual}
+              alt="Neroli Terrace scent direction mood board"
+              onLoad={() => setImageLoaded(true)}
+              className={`h-auto w-full motion-safe:transition-opacity motion-safe:duration-700 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            />
+          </div>
+        </div>
       </section>
 
-      <section className="mt-10">
-        <h2 className="text-sm font-semibold tracking-normal text-ink-muted">Estimated cost</h2>
-        <Card className="mt-3 flex items-center justify-between">
-          <div>
-            <p className="text-sm text-ink-muted">Fragrance oil over {project.brief.durationLabel.toLowerCase()}</p>
-            <p className="tabular text-2xl">€{oilCost.toLocaleString()}</p>
-          </div>
-          <p className="text-xs text-ink-muted">estimated, not a final quote</p>
-        </Card>
-      </section>
+      {!isComplex && !state.customerRequestedExpertReview && (
+        <div className="mt-8">
+          <button
+            className="text-xs text-ink-muted underline decoration-line underline-offset-4 hover:text-ink"
+            onClick={() => dispatch({ type: 'REQUEST_EXPERT_REVIEW' })}
+          >
+            Request expert review anyway
+          </button>
+        </div>
+      )}
 
       <FixedFooter>
-          <Button
-            variant="secondary"
-            onClick={() => dispatch({ type: 'NAVIGATE', screen: 'ai-analysis' })}
-          >
-            Back
-          </Button>
-          <Button
-            variant="primary"
-            disabled={!selected || (isComplex && !isConfirmed)}
-            onClick={() => dispatch({ type: 'NAVIGATE', screen: 'commercial-summary' })}
-          >
-            Continue to commercial summary
-          </Button>
+            <Button
+              variant="secondary"
+              onClick={() => dispatch({ type: 'NAVIGATE', screen: 'ai-analysis' })}
+            >
+              Back
+            </Button>
+            <div className="ml-auto flex items-stretch gap-3">
+            <div className="flex items-center gap-3 rounded-lg border border-signal-green/30 bg-emerald-50 px-4">
+              <Wallet size={22} className="shrink-0 text-signal-green" aria-hidden="true" />
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-ink-muted">Estimated cost</p>
+                <p className="tabular text-lg font-semibold">€{oilCost.toLocaleString()}</p>
+              </div>
+            </div>
+            <Button
+              variant="primary"
+              onClick={() => dispatch({ type: 'NAVIGATE', screen: 'machine' })}
+            >
+              Continue to machine recommendation
+            </Button>
+            </div>
       </FixedFooter>
     </main>
   )

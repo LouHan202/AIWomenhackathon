@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { Check, Pencil, Plus } from 'lucide-react'
+import { Check, Pencil, Plus, X } from 'lucide-react'
 import { TextArea, TextInput } from './Inputs'
-import { Button } from './Button'
 
 export function EditableDetail({ label, value, missing, placeholder, numeric, onSave }: {
   label: string
@@ -19,8 +18,49 @@ export function EditableDetail({ label, value, missing, placeholder, numeric, on
       {editing ? (
         <form className="p-5 sm:p-6" onSubmit={(event) => { event.preventDefault(); if (!draft.trim() || (numeric && Number(draft) <= 0)) return; onSave(draft); setEditing(false) }}>
           <label className="mb-3 block text-sm font-semibold" htmlFor={`edit-${label}`}>{label}</label>
-          {numeric ? <TextInput id={`edit-${label}`} autoFocus required type="number" min={1} value={draft} onChange={(e) => setDraft(e.target.value)} /> : <TextArea id={`edit-${label}`} autoFocus required rows={2} value={draft} placeholder={placeholder} onChange={(e) => setDraft(e.target.value)} />}
-          <div className="mt-3 flex gap-2"><Button type="submit" variant="secondary">Save</Button><Button type="button" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button></div>
+          <div className="relative">
+            {numeric ? (
+              <TextInput
+                id={`edit-${label}`}
+                autoFocus
+                required
+                type="number"
+                min={1}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                className="pr-24"
+              />
+            ) : (
+              <TextArea
+                id={`edit-${label}`}
+                autoFocus
+                required
+                rows={2}
+                value={draft}
+                placeholder={placeholder}
+                onChange={(e) => setDraft(e.target.value)}
+                className="pr-24"
+              />
+            )}
+            <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
+              <button
+                type="button"
+                aria-label="Close edit"
+                onClick={() => setEditing(false)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-line bg-paper text-ink-muted transition-colors duration-150 hover:border-ink/40 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              >
+                <X size={16} />
+              </button>
+              <button
+                type="submit"
+                aria-label="Save"
+                disabled={!draft.trim() || (numeric && Number(draft) <= 0)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-signal-green bg-signal-green text-white transition-colors duration-150 enabled:hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:border-signal-green/45 disabled:bg-paper disabled:text-signal-green disabled:opacity-40"
+              >
+                <Check size={16} />
+              </button>
+            </div>
+          </div>
         </form>
       ) : (
         <button type="button" onClick={open} className="group flex w-full gap-4 p-5 text-left focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink sm:p-6" aria-label={`Edit ${label}`}>

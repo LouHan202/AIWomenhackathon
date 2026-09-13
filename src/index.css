@@ -38,6 +38,7 @@
 @layer base {
   html {
     color-scheme: light;
+    font-size: 110%;
   }
   body {
     background: var(--color-paper);
@@ -156,6 +157,19 @@
   animation: scent-focus-turn 8s linear infinite;
 }
 @keyframes scent-focus-turn { to { --scent-focus-angle: 360deg; } }
+
+/* Draws the eye to the one required field on the brief screen while it's still empty. */
+.attention-ring:not(:focus) {
+  border-color: var(--color-signal-amber);
+  animation: attention-pulse 2.2s ease-in-out infinite;
+}
+@keyframes attention-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-signal-amber) 35%, transparent); }
+  50% { box-shadow: 0 0 0 7px color-mix(in oklab, var(--color-signal-amber) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .attention-ring:not(:focus) { animation: none; box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-signal-amber) 20%, transparent); }
+}
 @media (prefers-reduced-motion: reduce) {
   .scent-focus-input:focus { animation: none; }
 }
@@ -164,8 +178,8 @@
 .choice-content { display: flex; align-items: center; gap: 0.75rem; height: 100%; min-height: 4.5rem; padding: 0.875rem; border: 1px solid var(--color-line); border-radius: 1rem; font-size: 0.875rem; font-weight: 500; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; }
 .choice-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: var(--color-surface-sunken); color: var(--color-ink-muted); }
 .choice-tile:hover .choice-content { border-color: var(--color-ink-muted); }
-.choice-tile input:checked + .choice-content { background: var(--color-surface-sunken); border-color: var(--color-ink); box-shadow: 0 0 0 1px var(--color-ink), 0 0 0 4px rgb(0 0 0 / 0.06); }
-.choice-tile input:checked + .choice-content .choice-icon { background: var(--color-ink); color: white; }
+.choice-tile input:checked + .choice-content { background: color-mix(in oklab, var(--color-signal-green) 8%, var(--color-paper)); border-color: var(--color-signal-green); box-shadow: 0 0 0 1px var(--color-signal-green), 0 0 0 4px color-mix(in oklab, var(--color-signal-green) 12%, transparent); }
+.choice-tile input:checked + .choice-content .choice-icon { background: var(--color-signal-green); color: white; }
 .choice-tile input:focus-visible + .choice-content { outline: 2px solid var(--color-ink); outline-offset: 4px; }
 
 .dictation-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.25rem; padding: 0.5rem 0.75rem; border-radius: 999px; font-size: 0.75rem; cursor: pointer; }

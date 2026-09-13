@@ -9,8 +9,8 @@ const STEPS: { screens: ScreenId[]; label: string; Icon: typeof FileText }[] = [
   { screens: ['brief-upload'], label: 'Brief', Icon: FileText },
   { screens: ['ai-analysis'], label: 'Analysis', Icon: Activity },
   { screens: ['suggestion', 'expert-review'], label: 'Direction', Icon: FlaskConical },
-  { screens: ['commercial-summary'], label: 'Commercial', Icon: HandCoins },
-  { screens: ['control-dashboard'], label: 'Live', Icon: Radio },
+  { screens: ['machine'], label: 'Machine', Icon: Radio },
+  { screens: ['commercial-summary'], label: 'Offer', Icon: HandCoins },
 ]
 
 export function ScentThreadRail({ current }: { current: ScreenId }) {

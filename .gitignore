@@ -12,6 +12,7 @@ __pycache__/
 # Build output
 dist/
 build/
+.vite/
 
 # Editor/OS
 .DS_Store

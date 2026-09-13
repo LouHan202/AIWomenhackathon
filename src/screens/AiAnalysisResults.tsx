@@ -6,7 +6,6 @@ import { EditableDetail } from '../components/ui/EditableDetail'
 import { useApp } from '../lib/state'
 import { Button } from '../components/ui/Button'
 import { TextInput } from '../components/ui/Inputs'
-import { Tag } from '../components/ui/Tag'
 import { MAX_SCENT_HINTS, NOTE_FAMILIES } from '../lib/notes'
 import type { Brief, BudgetTier, DeploymentScope, ExtractedField, Visibility } from '../lib/types'
 
@@ -246,10 +245,9 @@ export function AiAnalysisResults() {
     <main className="mx-auto max-w-4xl px-5 pb-36 pt-10 sm:px-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-[clamp(1.75rem,4vw,2.5rem)]">Here's what we understood</h1>
-        {brief.classification === 'complex' && <Tag kind="amber">Needs expert review</Tag>}
       </div>
       <p className="mt-3 text-base leading-7 text-ink-muted">Everything is editable. We've flagged the gaps so you can fill them in rather than have us guess.</p>
-      <div className={`mt-8 flex flex-wrap items-center gap-4 rounded-2xl border p-5 ${missingCount === 0 ? 'border-signal-green/45 bg-signal-green/10' : 'border-amber-200 bg-amber-50'}`}>
+      <div className={`sticky top-0 z-30 mt-8 flex flex-wrap items-center gap-4 rounded-2xl border p-5 ${missingCount === 0 ? 'border-signal-green/45 bg-[color-mix(in_oklab,var(--color-signal-green)_10%,var(--color-paper))]' : 'border-amber-200 bg-amber-50'}`}>
         {missingCount === 0 ? (
           <CheckCircle2 size={25} className="shrink-0 text-signal-green" aria-hidden="true" />
         ) : (
@@ -261,7 +259,7 @@ export function AiAnalysisResults() {
           </p>
           <progress aria-label="Brief details completed" max={10} value={found} className={`mt-3 h-2 w-full ${missingCount === 0 ? 'accent-signal-green' : 'accent-amber-500'}`} />
         </div>
-        {missingCount > 0 && <Button variant="secondary" onClick={() => { const gap = document.querySelector('[data-analysis-gap]'); gap?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' }); (gap?.querySelector('button, input') as HTMLElement | null)?.focus({ preventScroll: true }) }}>Jump to gap</Button>}
+        {missingCount > 0 && <Button variant="secondary" onClick={() => { const gap = document.querySelector('[data-analysis-gap]'); gap?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' }); (gap?.querySelector('button, input') as HTMLElement | null)?.focus({ preventScroll: true }) }}>Fill the gap</Button>}
       </div>
       {groups.map(({ title, Icon, fields }) => (
         <section key={title} className="mt-8">

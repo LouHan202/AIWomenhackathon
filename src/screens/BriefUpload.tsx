@@ -3,7 +3,7 @@ import { FixedFooter } from '../components/ui/FixedFooter'
 import { Modal } from '../components/ui/Modal'
 import { useEffect, useRef, useState } from 'react'
 import { ScentWave } from '../components/ScentWave'
-import { FileUp, Map, Image, Landmark, Stethoscope, Leaf, PartyPopper, ShoppingBag, Shapes, Zap, CalendarDays, Infinity as InfinityIcon, NotebookPen, Wand2, UserCheck } from 'lucide-react'
+import { FileUp, Map, Image, Landmark, Stethoscope, Leaf, PartyPopper, ShoppingBag, Shapes, Zap, CalendarDays, Infinity as InfinityIcon, NotebookPen, Wand2, UserCheck, Lightbulb, CheckCircle2 } from 'lucide-react'
 import { Slider } from '../components/ui/Slider'
 import { useApp } from '../lib/state'
 import { parseBrief } from '../lib/brief-parser'
@@ -72,7 +72,7 @@ export function BriefUpload() {
           <div className="relative w-full">
           <TextArea
             ref={briefInputRef}
-            className="scent-focus-input pb-16"
+            className={`scent-focus-input pb-16 ${rawText.trim().length === 0 ? 'attention-ring' : ''}`}
             rows={5}
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
@@ -88,7 +88,7 @@ export function BriefUpload() {
         <section aria-labelledby="supporting-files-heading">
           <h2 id="supporting-files-heading" className="text-lg font-semibold tracking-normal">Add supporting files</h2>
           <p className="mt-1 text-sm text-ink-muted">Optional — this helps us understand the space faster</p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <input ref={fileInputRef} type="file" className="hidden" onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)} />
             <input ref={floorPlanInputRef} type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => setFloorPlanFileName(e.target.files?.[0]?.name ?? null)} />
             <input ref={referenceInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => setReferenceImageFileNames(Array.from(e.target.files ?? []).map((f) => f.name))} />
@@ -97,8 +97,20 @@ export function BriefUpload() {
               { title: 'Floor plan', detail: floorPlanFileName, Icon: Map, input: floorPlanInputRef },
               { title: 'Reference images', detail: referenceImageFileNames.length ? `${referenceImageFileNames.length} image${referenceImageFileNames.length === 1 ? '' : 's'} selected` : null, Icon: Image, input: referenceInputRef },
             ].map(({ title, detail, Icon, input }) => (
-              <button key={title} type="button" onClick={() => input.current?.click()} className="flex min-h-28 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-line bg-surface-sunken/30 px-4 py-5 text-sm font-medium transition-colors hover:border-ink hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">
-                <Icon className="h-6 w-6 text-ink-muted" strokeWidth={1.7} aria-hidden="true" />
+              <button
+                key={title}
+                type="button"
+                onClick={() => input.current?.click()}
+                className={`relative flex min-h-28 flex-col items-center justify-center gap-3 rounded-2xl border px-4 py-5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
+                  detail
+                    ? 'border-signal-green bg-[color-mix(in_oklab,var(--color-signal-green)_8%,var(--color-paper))] shadow-[0_0_0_1px_var(--color-signal-green)]'
+                    : 'border-dashed border-line bg-surface-sunken/30 hover:border-ink hover:bg-surface-sunken'
+                }`}
+              >
+                {detail && <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-signal-green" strokeWidth={1.8} aria-hidden="true" />}
+                <span className={`flex h-10 w-10 items-center justify-center rounded-full ${detail ? 'bg-signal-green text-white' : 'text-ink-muted'}`}>
+                  <Icon className="h-6 w-6" strokeWidth={1.7} aria-hidden="true" />
+                </span>
                 <span>{title}</span>
                 {detail && <span className="max-w-full break-all text-xs font-normal text-ink-muted" aria-live="polite">{detail}</span>}
               </button>
@@ -155,7 +167,10 @@ export function BriefUpload() {
       </div>
       <FixedFooter>
         <div className="flex min-w-0 items-center gap-4">
-          <button type="button" className="shrink-0 rounded px-1 py-1 text-xs text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-2" onClick={() => setShowHowItWorks(true)}>How it works</button>
+          <button type="button" className="flex shrink-0 items-center gap-2 rounded px-1 py-1 text-[16px] text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-2" onClick={() => setShowHowItWorks(true)}>
+            <Lightbulb className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+            <span>How it works</span>
+          </button>
           <p className="truncate text-xs text-ink-muted">{!venueType || !installType ? 'Choose a venue and install type to continue.' : dictating ? 'Finish dictation to continue.' : ''}</p>
         </div>
         <Button className="ml-auto" variant="primary" disabled={!canSubmit} onClick={handleSubmit}>Analyze brief</Button>

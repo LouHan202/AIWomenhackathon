@@ -125,6 +125,7 @@ export type ScreenId =
   | 'brief-upload'
   | 'ai-analysis'
   | 'suggestion'
+  | 'machine'
   | 'expert-review'
   | 'commercial-summary'
   | 'control-dashboard'
