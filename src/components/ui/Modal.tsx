@@ -2,9 +2,9 @@ import { Dialog, Portal } from '@chakra-ui/react'
 import { X } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-export function Modal({ open, onClose, title, hideTitle = false, children }: { open: boolean; onClose: () => void; title: string; hideTitle?: boolean; children: ReactNode }) {
+export function Modal({ open, onClose, title, hideTitle = false, initialFocusEl, children }: { open: boolean; onClose: () => void; title: string; hideTitle?: boolean; initialFocusEl?: () => HTMLElement | null; children: ReactNode }) {
   return (
-    <Dialog.Root open={open} onOpenChange={(e) => { if (!e.open) onClose() }} placement="center">
+    <Dialog.Root open={open} onOpenChange={(e) => { if (!e.open) onClose() }} placement="center" initialFocusEl={initialFocusEl}>
       <Portal>
         <Dialog.Backdrop className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm" />
         <Dialog.Positioner className="fixed inset-0 z-50 flex items-center justify-center p-4">

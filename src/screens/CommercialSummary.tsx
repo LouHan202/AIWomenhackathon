@@ -25,6 +25,7 @@ export function CommercialSummary() {
   const [email, setEmail] = useState('')
   const [note, setNote] = useState('')
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nameInputRef = useRef<HTMLInputElement>(null)
   useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }) }, [])
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, [])
 
@@ -91,7 +92,7 @@ export function CommercialSummary() {
         <Button variant="primary" icon={<Send size={17} aria-hidden="true" />} onClick={() => setModalOpen(true)}>Request your personal proposal</Button>
       </FixedFooter>
 
-      <Modal hideTitle={requestStatus === 'sent'} open={modalOpen} onClose={() => setModalOpen(false)} title={`Personal proposal · ${scent?.label ?? 'Your scent'}`}>
+      <Modal hideTitle={requestStatus === 'sent'} open={modalOpen} onClose={() => setModalOpen(false)} title={`Personal proposal · ${scent?.label ?? 'Your scent'}`} initialFocusEl={() => nameInputRef.current}>
         <div className="max-h-[65dvh] overflow-y-auto pr-1">
           {requestStatus === 'sent' ? (
             <div role="status" className="py-4 text-center">
@@ -109,7 +110,7 @@ export function CommercialSummary() {
             }}>
               <p className="mb-5 text-sm leading-6 text-ink-muted">Your selected scent and machine preferences will be prepared for a SILLAGE consultant. We will confirm the final proposal together.</p>
               <fieldset disabled={requestStatus === 'sending'} className="space-y-4">
-                <div><label htmlFor="proposal-name" className="mb-2 block text-sm">Name</label><TextInput id="proposal-name" autoComplete="name" required value={name} onChange={(event) => setName(event.target.value)} placeholder="Your name" /></div>
+                <div><label htmlFor="proposal-name" className="mb-2 block text-sm">Name</label><TextInput ref={nameInputRef} id="proposal-name" autoComplete="name" required value={name} onChange={(event) => setName(event.target.value)} placeholder="Your name" /></div>
                 <div><label htmlFor="proposal-email" className="mb-2 block text-sm">Email</label><TextInput id="proposal-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" /></div>
                 <div><label htmlFor="proposal-note" className="mb-2 block text-sm">Project note <span className="text-ink-muted">(optional)</span></label><TextArea id="proposal-note" rows={3} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Anything we should know?" /></div>
                 <Button type="submit" className="w-full" disabled={requestStatus === 'sending' || !name.trim()} icon={requestStatus === 'sending' ? <LoaderCircle size={18} className="motion-safe:animate-spin" aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}>
